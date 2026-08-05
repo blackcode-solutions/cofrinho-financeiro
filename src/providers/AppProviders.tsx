@@ -16,6 +16,9 @@ import { storage } from '@/src/services/storage';
 import { useAuthStore, useUiStore } from '@/src/store';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
+SplashScreen.setOptions({ fade: true, duration: 400 });
+
+const SPLASH_GREEN = '#16A34A';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +37,27 @@ function AuthBootstrap({ children }: PropsWithChildren) {
 
     async function boot() {
       await storage.hydrate();
-      const seen = storage.getString('onboarding_seen');
+
+      // Redesign do carrossel: limpa flag antiga e, uma vez, força reexibir o onboarding
+      storage.delete('onboarding_seen');
+      const redesignReset = 'onboarding_redesign_reset_v1';
+      if (storage.getString(redesignReset) !== '1') {
+        storage.delete('onboarding_seen_v2');
+        storage.set(redesignReset, '1');
+        setOnboardingSeen(false);
+        try {
+          await api.signOut();
+        } catch {
+          // ignore
+        }
+        if (!mounted) return;
+        setSession(null);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      const seen = storage.getString('onboarding_seen_v2');
       if (seen === '1') setOnboardingSeen(true);
 
       try {
@@ -109,14 +132,22 @@ export function AppProviders({ children }: PropsWithChildren) {
   useEffect(() => {
     if (fontsLoaded) {
       setReady(true);
-      SplashScreen.hideAsync().catch(() => undefined);
     }
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!ready) return;
+    // Hide after the first branded frame can paint (avoids a blank/Expo flash).
+    const frame = requestAnimationFrame(() => {
+      SplashScreen.hideAsync().catch(() => undefined);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [ready]);
 
   if (!ready) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: SPLASH_GREEN }}>
       <QueryClientProvider client={queryClient}>
         <BottomSheetModalProvider>
           <AuthBootstrap>{children}</AuthBootstrap>

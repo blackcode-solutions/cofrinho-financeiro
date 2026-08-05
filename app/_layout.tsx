@@ -8,6 +8,8 @@ import { colors } from '@/src/theme/tokens';
 
 export { ErrorBoundary } from 'expo-router';
 
+const SPLASH_GREEN = '#16A34A';
+
 export default function RootLayout() {
   return (
     <AppProviders>
@@ -19,7 +21,7 @@ export default function RootLayout() {
           animation: 'fade',
         }}
       >
-        <Stack.Screen name="index" />
+        <Stack.Screen name="index" options={{ contentStyle: { backgroundColor: SPLASH_GREEN } }} />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(onboarding)" />
         <Stack.Screen name="(tabs)" />

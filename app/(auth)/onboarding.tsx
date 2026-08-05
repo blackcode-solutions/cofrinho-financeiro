@@ -1,153 +1,248 @@
-import { useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  Dimensions,
-  FlatList,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
+  Image,
+  TouchableOpacity,
+  useWindowDimensions,
+  ImageSourcePropType,
 } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { runOnJS } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Button, PigCard } from '@/src/components/ui';
 import { storage } from '@/src/services/storage';
 import { useUiStore } from '@/src/store';
 import { colors } from '@/src/theme/tokens';
 
-const { width } = Dimensions.get('window');
+type Slide = {
+  key: string;
+  titlePlain: string;
+  titleAccent: string;
+  body: string;
+  image: ImageSourcePropType;
+};
 
-const slides = [
+const slides: Slide[] = [
   {
     key: '1',
-    title: 'Guarde dinheiro antes de gastar.',
-    body: 'Pague a si mesmo primeiro. O Cofrinho te lembra no dia do salário.',
-    visual: 'save' as const,
+    titlePlain: 'Guarde dinheiro',
+    titleAccent: 'antes de gastar.',
+    body: 'Separe uma parte do seu salário e veja seu dinheiro render ao longo do tempo.',
+    image: require('../../assets/images/onboarding/save.png'),
   },
   {
     key: '2',
-    title: 'Evite compras por impulso.',
-    body: 'Espere 24 horas antes de comprar. Seu futuro eu agradece.',
-    visual: 'wait' as const,
+    titlePlain: 'Evite compras',
+    titleAccent: 'por impulso.',
+    body: 'Pense melhor, espere 24h e faça escolhas que realmente valem a pena.',
+    image: require('../../assets/images/onboarding/wait.png'),
   },
   {
     key: '3',
-    title: 'Alcance seus sonhos.',
-    body: 'Construa riqueza aos poucos. Cada depósito faz sua cidade crescer.',
-    visual: 'goal' as const,
+    titlePlain: 'Alcance seus',
+    titleAccent: 'sonhos.',
+    body: 'Pequenas decisões hoje criam grandes conquistas amanhã.',
+    image: require('../../assets/images/onboarding/goal.png'),
   },
 ];
 
+const SWIPE_DISTANCE = 56;
+const SWIPE_VELOCITY = 500;
+
 export default function OnboardingScreen() {
-  const listRef = useRef<FlatList>(null);
+  const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const setOnboardingSeen = useUiStore((s) => s.setOnboardingSeen);
 
-  const finish = () => {
-    storage.set('onboarding_seen', '1');
+  const item = slides[index];
+  const illustrationSize = Math.min(240, Math.round(width * 0.58));
+  const isLast = index >= slides.length - 1;
+
+  const finish = useCallback(() => {
+    storage.set('onboarding_seen_v2', '1');
     setOnboardingSeen(true);
     router.replace('/(auth)/sign-up');
-  };
+  }, [setOnboardingSeen]);
+
+  const goNext = useCallback(() => {
+    setIndex((current) => Math.min(current + 1, slides.length - 1));
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setIndex((current) => Math.max(current - 1, 0));
+  }, []);
 
   const next = () => {
-    if (index >= slides.length - 1) {
+    if (isLast) {
       finish();
       return;
     }
-    listRef.current?.scrollToIndex({ index: index + 1, animated: true });
+    goNext();
   };
 
-  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const i = Math.round(e.nativeEvent.contentOffset.x / width);
-    setIndex(i);
-  };
+  const panGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .activeOffsetX([-20, 20])
+        .failOffsetY([-25, 25])
+        .onEnd((event) => {
+          'worklet';
+          const wentLeft =
+            event.translationX < -SWIPE_DISTANCE || event.velocityX < -SWIPE_VELOCITY;
+          const wentRight =
+            event.translationX > SWIPE_DISTANCE || event.velocityX > SWIPE_VELOCITY;
+
+          if (wentLeft) {
+            runOnJS(goNext)();
+          } else if (wentRight) {
+            runOnJS(goPrev)();
+          }
+        }),
+    [goNext, goPrev],
+  );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={listRef}
-        data={slides}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        keyExtractor={(item) => item.key}
-        renderItem={({ item }) => (
-          <View style={[styles.slide, { width }]}>
-            <View style={styles.visual}>
-              {item.visual === 'save' && <PigCard stage="baby" size={140} />}
-              {item.visual === 'wait' && <Text style={styles.emoji}>🛍️⏱️</Text>}
-              {item.visual === 'goal' && <Text style={styles.emoji}>🏝️🏠</Text>}
-            </View>
-            <Text style={styles.title}>{item.title}</Text>
-            <Text style={styles.body}>{item.body}</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        paddingTop: insets.top + 40,
+        paddingBottom: Math.max(insets.bottom, 16),
+      }}
+    >
+      <GestureDetector gesture={panGesture}>
+        <Animated.View
+          style={{
+            flexGrow: 1,
+            flexShrink: 1,
+            flexBasis: 0,
+          }}
+        >
+          <View style={{ paddingHorizontal: 32, alignItems: 'center' }}>
+            <Text
+              style={{
+                fontFamily: 'Inter_700Bold',
+                fontSize: 30,
+                lineHeight: 38,
+                color: colors.text,
+                textAlign: 'center',
+              }}
+            >
+              {item.titlePlain}
+            </Text>
+            <Text
+              style={{
+                fontFamily: 'Inter_700Bold',
+                fontSize: 30,
+                lineHeight: 38,
+                color: '#16A34A',
+                textAlign: 'center',
+              }}
+            >
+              {item.titleAccent}
+            </Text>
           </View>
-        )}
-      />
-      <View style={styles.footer}>
-        <View style={styles.dots}>
-          {slides.map((s, i) => (
-            <View key={s.key} style={[styles.dot, i === index && styles.dotActive]} />
+
+          <View
+            style={{
+              flexGrow: 1,
+              flexShrink: 1,
+              flexBasis: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 32,
+            }}
+          >
+            <View
+              style={{
+                width: illustrationSize,
+                height: illustrationSize,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <View
+                style={{
+                  position: 'absolute',
+                  width: illustrationSize,
+                  height: illustrationSize,
+                  borderRadius: illustrationSize / 2,
+                  backgroundColor: '#F1F5F9',
+                }}
+              />
+              <Image
+                source={item.image}
+                style={{ width: illustrationSize * 0.88, height: illustrationSize * 0.88 }}
+                resizeMode="contain"
+              />
+            </View>
+          </View>
+
+          <Text
+            style={{
+              fontFamily: 'Inter_400Regular',
+              fontSize: 16,
+              lineHeight: 24,
+              color: colors.muted,
+              textAlign: 'center',
+              paddingHorizontal: 36,
+              marginBottom: 28,
+            }}
+          >
+            {item.body}
+          </Text>
+        </Animated.View>
+      </GestureDetector>
+
+      <View style={{ paddingHorizontal: 24 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 16,
+          }}
+        >
+          {slides.map((slide, i) => (
+            <View
+              key={slide.key}
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                marginHorizontal: 4,
+                backgroundColor: i === index ? '#16A34A' : '#D1D5DB',
+              }}
+            />
           ))}
         </View>
-        <Button title={index === slides.length - 1 ? 'Começar' : 'Continuar'} onPress={next} />
-        <Button title="Já tenho conta" variant="ghost" onPress={() => {
-          storage.set('onboarding_seen', '1');
-          setOnboardingSeen(true);
-          router.replace('/(auth)/sign-in');
-        }} />
+
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={next}
+          accessibilityRole="button"
+          accessibilityLabel={isLast ? 'Começar' : 'Avançar'}
+          style={{
+            backgroundColor: '#16A34A',
+            height: 56,
+            borderRadius: 16,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontSize: 16,
+              fontFamily: 'Inter_600SemiBold',
+            }}
+          >
+            {isLast ? 'Começar' : 'Avançar'}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, paddingBottom: 24 },
-  slide: {
-    paddingHorizontal: 28,
-    paddingTop: 80,
-    alignItems: 'center',
-    gap: 16,
-  },
-  visual: {
-    height: 220,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  emoji: { fontSize: 72 },
-  title: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 28,
-    color: colors.text,
-    textAlign: 'center',
-    lineHeight: 34,
-  },
-  body: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 16,
-    color: colors.muted,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-  footer: {
-    paddingHorizontal: 24,
-    gap: 8,
-  },
-  dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#D1D5DB',
-  },
-  dotActive: {
-    width: 24,
-    backgroundColor: colors.primary,
-  },
-});

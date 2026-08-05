@@ -34,6 +34,20 @@ Sem `.env` válido o app roda em **modo local** (dados no dispositivo) para dese
 - `npm start` — Expo
 - `npm run android` / `ios` / `web`
 
+## Splash screen
+
+A splash nativa (fundo `#16A34A` + ícone) é configurada pelo plugin `expo-splash-screen` em `app.json`. Depois do hide, o app mostra a splash em JS (`SplashScreenView`) até o auth terminar.
+
+**Importante:** a partir do SDK 52, o **Expo Go não aplica a imagem customizada** da splash (mostra o ícone do app). Para validar a splash nativa de verdade, use um binário próprio:
+
+```bash
+npx expo run:android
+# ou
+npx expo run:ios
+```
+
+Ou um release / EAS Build. Só então o fundo verde + porco centrado aparecem na abertura nativa.
+
 ## Estrutura
 
 ```
