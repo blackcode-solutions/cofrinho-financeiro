@@ -1,19 +1,19 @@
+import { storage } from '@/src/services/storage';
+import { useUiStore } from '@/src/store';
+import { colors } from '@/src/theme/tokens';
+import { router } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import {
-  View,
-  Text,
   Image,
+  ImageSourcePropType,
+  Text,
   TouchableOpacity,
   useWindowDimensions,
-  ImageSourcePropType,
+  View,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { storage } from '@/src/services/storage';
-import { useUiStore } from '@/src/store';
-import { colors } from '@/src/theme/tokens';
 
 type Slide = {
   key: string;
@@ -28,21 +28,21 @@ const slides: Slide[] = [
     key: '1',
     titlePlain: 'Guarde dinheiro',
     titleAccent: 'antes de gastar.',
-    body: 'Separe uma parte do seu salário e veja seu dinheiro render ao longo do tempo.',
+    body: 'Separe uma parte do seu\n salário e veja seu dinheiro \n render ao longo do tempo.',
     image: require('../../assets/images/onboarding/save.png'),
   },
   {
     key: '2',
     titlePlain: 'Evite compras',
     titleAccent: 'por impulso.',
-    body: 'Pense melhor, espere 24h e faça escolhas que realmente valem a pena.',
+    body: 'Pense melhor, espere 24h\n e faça escolhas que realmente\n valem a pena.',
     image: require('../../assets/images/onboarding/wait.png'),
   },
   {
     key: '3',
     titlePlain: 'Alcance seus',
     titleAccent: 'sonhos.',
-    body: 'Pequenas decisões hoje criam grandes conquistas amanhã.',
+    body: 'Pequenas decisões hoje\n criam grandes conquistas\n amanhã.',
     image: require('../../assets/images/onboarding/goal.png'),
   },
 ];
@@ -57,7 +57,7 @@ export default function OnboardingScreen() {
   const setOnboardingSeen = useUiStore((s) => s.setOnboardingSeen);
 
   const item = slides[index];
-  const illustrationSize = Math.min(240, Math.round(width * 0.58));
+  const illustrationSize = Math.min(300, Math.round(width * 0.72));
   const isLast = index >= slides.length - 1;
 
   const finish = useCallback(() => {
@@ -109,7 +109,7 @@ export default function OnboardingScreen() {
         flex: 1,
         backgroundColor: '#FFFFFF',
         paddingTop: insets.top + 40,
-        paddingBottom: Math.max(insets.bottom, 16),
+        paddingBottom: Math.max(insets.bottom, 16) + 28,
       }}
     >
       <GestureDetector gesture={panGesture}>
@@ -155,48 +155,29 @@ export default function OnboardingScreen() {
               paddingHorizontal: 32,
             }}
           >
-            <View
+            <Image
+              source={item.image}
+              style={{ width: illustrationSize, height: illustrationSize }}
+              resizeMode="contain"
+            />
+            <Text
               style={{
-                width: illustrationSize,
-                height: illustrationSize,
-                alignItems: 'center',
-                justifyContent: 'center',
+                fontFamily: 'Inter_400Regular',
+                fontSize: 16,
+                lineHeight: 24,
+                color: colors.muted,
+                textAlign: 'center',
+                paddingHorizontal: 4,
+                marginTop: 12,
               }}
             >
-              <View
-                style={{
-                  position: 'absolute',
-                  width: illustrationSize,
-                  height: illustrationSize,
-                  borderRadius: illustrationSize / 2,
-                  backgroundColor: '#F1F5F9',
-                }}
-              />
-              <Image
-                source={item.image}
-                style={{ width: illustrationSize * 0.88, height: illustrationSize * 0.88 }}
-                resizeMode="contain"
-              />
-            </View>
+              {item.body}
+            </Text>
           </View>
-
-          <Text
-            style={{
-              fontFamily: 'Inter_400Regular',
-              fontSize: 16,
-              lineHeight: 24,
-              color: colors.muted,
-              textAlign: 'center',
-              paddingHorizontal: 36,
-              marginBottom: 28,
-            }}
-          >
-            {item.body}
-          </Text>
         </Animated.View>
       </GestureDetector>
 
-      <View style={{ paddingHorizontal: 24 }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
         <View
           style={{
             flexDirection: 'row',
