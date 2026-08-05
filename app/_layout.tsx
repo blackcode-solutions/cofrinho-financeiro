@@ -1,59 +1,41 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import '../global.css';
+import 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
+import { AppProviders } from '@/src/providers/AppProviders';
+import { CelebrationModal } from '@/src/components/ui';
+import { colors } from '@/src/theme/tokens';
 
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+export { ErrorBoundary } from 'expo-router';
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    <AppProviders>
+      <StatusBar style="dark" />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+          animation: 'fade',
+        }}
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(onboarding)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="guardar" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="registrar-gasto" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="esperar-24h" options={{ animation: 'fade' }} />
+        <Stack.Screen name="tentacao" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="compra/[id]" />
+        <Stack.Screen name="missao/[id]" />
+        <Stack.Screen name="cidade" />
+        <Stack.Screen name="insights" />
+        <Stack.Screen name="amigos" />
+        <Stack.Screen name="retrospectiva" />
+        <Stack.Screen name="settings" />
       </Stack>
-    </ThemeProvider>
+      <CelebrationModal />
+    </AppProviders>
   );
 }
