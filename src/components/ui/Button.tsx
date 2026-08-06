@@ -2,7 +2,7 @@ import { Pressable, Text, ActivityIndicator, ViewStyle, StyleSheet } from 'react
 import * as Haptics from 'expo-haptics';
 import { colors, radius } from '@/src/theme/tokens';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'outlineLight';
 
 type Props = {
   title: string;
@@ -19,6 +19,7 @@ const stylesFor: Record<Variant, { bg: string; text: string; border?: string }> 
   ghost: { bg: 'transparent', text: colors.primary },
   danger: { bg: colors.error, text: '#fff' },
   outline: { bg: 'transparent', text: colors.text, border: colors.border },
+  outlineLight: { bg: 'transparent', text: '#fff', border: '#FFFFFF' },
 };
 
 export function Button({
@@ -30,6 +31,7 @@ export function Button({
   style,
 }: Props) {
   const v = stylesFor[variant];
+  const isPill = variant === 'outlineLight';
   return (
     <Pressable
       accessibilityRole="button"
@@ -40,6 +42,7 @@ export function Button({
       }}
       style={({ pressed }) => [
         styles.base,
+        isPill && styles.pill,
         {
           backgroundColor: v.bg,
           borderColor: v.border ?? 'transparent',
@@ -67,6 +70,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  pill: {
+    borderRadius: 16,
+    height: 56,
   },
   text: {
     fontFamily: 'Inter_600SemiBold',

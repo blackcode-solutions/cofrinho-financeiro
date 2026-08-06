@@ -27,7 +27,10 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="guardar" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="registrar-gasto" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="esperar-24h" options={{ animation: 'fade' }} />
+        <Stack.Screen
+          name="esperar-24h"
+          options={{ animation: 'fade', contentStyle: { backgroundColor: '#14532D' } }}
+        />
         <Stack.Screen name="tentacao" options={{ presentation: 'modal' }} />
         <Stack.Screen name="compra/[id]" />
         <Stack.Screen name="missao/[id]" />
