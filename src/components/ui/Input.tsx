@@ -4,17 +4,21 @@ import { colors, radius } from '@/src/theme/tokens';
 type Props = TextInputProps & {
   label?: string;
   error?: string;
+  rightElement?: React.ReactNode;
 };
 
-export function Input({ label, error, style, ...rest }: Props) {
+export function Input({ label, error, style, rightElement, ...rest }: Props) {
   return (
     <View style={styles.wrap}>
       {label ? <Text style={styles.label}>{label}</Text> : null}
-      <TextInput
-        placeholderTextColor={colors.muted}
-        style={[styles.input, error ? styles.inputError : null, style]}
-        {...rest}
-      />
+      <View style={[styles.inputWrap, error ? styles.inputError : null]}>
+        <TextInput
+          placeholderTextColor={colors.muted}
+          style={[styles.input, rightElement ? styles.inputWithRight : null, style]}
+          {...rest}
+        />
+        {rightElement ? <View style={styles.right}>{rightElement}</View> : null}
+      </View>
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
@@ -27,16 +31,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text,
   },
-  input: {
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 52,
     borderRadius: radius.md,
     borderWidth: 1.5,
     borderColor: colors.border,
     backgroundColor: '#fff',
+  },
+  input: {
+    flex: 1,
+    height: '100%',
     paddingHorizontal: 16,
     fontFamily: 'Inter_400Regular',
     fontSize: 16,
     color: colors.text,
+  },
+  inputWithRight: {
+    paddingRight: 8,
+  },
+  right: {
+    paddingRight: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   inputError: { borderColor: colors.error },
   error: {

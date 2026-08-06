@@ -9,6 +9,7 @@ type Props = {
   style?: ViewStyle;
   right?: React.ReactNode;
   dark?: boolean;
+  backgroundColor?: string;
 };
 
 export function Screen({
@@ -19,6 +20,7 @@ export function Screen({
   style,
   right,
   dark,
+  backgroundColor,
 }: Props) {
   const content = (
     <View style={[styles.inner, style]}>
@@ -40,7 +42,13 @@ export function Screen({
   );
 
   return (
-    <SafeAreaView style={[styles.safe, dark && { backgroundColor: '#14532D' }]}>
+    <SafeAreaView
+      style={[
+        styles.safe,
+        dark && { backgroundColor: '#14532D' },
+        backgroundColor ? { backgroundColor } : null,
+      ]}
+    >
       {scroll ? (
         <ScrollView
           contentContainerStyle={styles.scroll}

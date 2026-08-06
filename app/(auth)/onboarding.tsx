@@ -63,7 +63,7 @@ export default function OnboardingScreen() {
   const finish = useCallback(() => {
     storage.set('onboarding_seen_v2', '1');
     setOnboardingSeen(true);
-    router.replace('/(auth)/sign-up');
+    router.replace('/(auth)/sign-in');
   }, [setOnboardingSeen]);
 
   const goNext = useCallback(() => {
