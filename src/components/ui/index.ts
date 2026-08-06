@@ -7,6 +7,7 @@ export { PigCard } from './PigCard';
 export { MissionCard } from './MissionCard';
 export { Badge } from './Badge';
 export { Chip } from './Chip';
+export { SegmentedControl } from './SegmentedControl';
 export { Avatar } from './Avatar';
 export { EmptyState } from './EmptyState';
 export { StatCard } from './StatCard';

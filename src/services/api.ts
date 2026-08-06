@@ -43,22 +43,22 @@ function defaultMissions(): Mission[] {
   return [
     {
       id: 'm1',
-      title: 'Sem cartão hoje',
+      title: 'Não use cartão hoje',
       description: 'Não use o cartão de crédito hoje',
       period: 'daily',
       target_value: 1,
-      xp_reward: 40,
-      icon: 'credit-card',
+      xp_reward: 80,
+      icon: 'coins',
       active: true,
     },
     {
       id: 'm2',
-      title: 'Economize R$ 50',
+      title: 'Economize R$50 esta semana',
       description: 'Guarde R$ 50 esta semana',
       period: 'weekly',
       target_value: 50,
-      xp_reward: 80,
-      icon: 'piggy-bank',
+      xp_reward: 120,
+      icon: 'gift',
       active: true,
     },
     {
@@ -68,7 +68,7 @@ function defaultMissions(): Mission[] {
       period: 'weekly',
       target_value: 3,
       xp_reward: 100,
-      icon: 'utensils',
+      icon: 'shield',
       active: true,
     },
     {

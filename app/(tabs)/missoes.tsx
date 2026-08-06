@@ -1,71 +1,102 @@
 import { useMemo, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { View, Text, StyleSheet, ActivityIndicator, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import { Screen, MissionCard, Chip, EmptyState, Button } from '@/src/components/ui';
-import { useAuthStore, useUiStore } from '@/src/store';
-import { api } from '@/src/services/api';
+import { ArrowLeft } from 'lucide-react-native';
+import { Screen, MissionCard, SegmentedControl, EmptyState } from '@/src/components/ui';
+import { useMissions } from '@/src/hooks/useFinanceData';
+import { colors } from '@/src/theme/tokens';
+
+const TABS = [
+  { value: 'active' as const, label: 'Ativos' },
+  { value: 'completed' as const, label: 'Concluídos' },
+];
 
 export default function MissoesScreen() {
-  const profile = useAuthStore((s) => s.profile);
-  const showCelebration = useUiStore((s) => s.showCelebration);
   const [tab, setTab] = useState<'active' | 'completed'>('active');
-  const qc = useQueryClient();
-
-  const { data: missions = [], refetch } = useQuery({
-    queryKey: ['missions', profile?.id],
-    queryFn: () => api.listUserMissions(profile!.id),
-    enabled: !!profile,
-  });
+  const { data: missions = [], isLoading } = useMissions();
 
   const filtered = useMemo(
     () => missions.filter((m) => (tab === 'active' ? m.status === 'active' : m.status === 'completed')),
     [missions, tab],
   );
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)');
+  };
+
   return (
-    <Screen title="Desafios" subtitle="Missões diárias, semanais e mensais.">
-      <View style={styles.tabs}>
-        <Chip label="Ativos" selected={tab === 'active'} onPress={() => setTab('active')} />
-        <Chip label="Concluídos" selected={tab === 'completed'} onPress={() => setTab('completed')} />
+    <Screen>
+      <View style={styles.header}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          onPress={handleBack}
+          hitSlop={12}
+          style={styles.backBtn}
+        >
+          <ArrowLeft color={colors.text} size={24} />
+        </Pressable>
+        <Text style={styles.title}>Desafios</Text>
+        <View style={styles.backBtn} />
       </View>
 
-      {filtered.length === 0 ? (
+      <SegmentedControl options={TABS} value={tab} onChange={setTab} />
+
+      {isLoading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : filtered.length === 0 ? (
         <EmptyState
           title={tab === 'active' ? 'Nenhuma missão ativa' : 'Nenhuma concluída ainda'}
           description="Complete ações no app para avançar nas missões."
         />
       ) : (
-        filtered.map((item) => (
-          <MissionCard
-            key={item.id}
-            item={item}
-            onPress={() =>
-              router.push({ pathname: '/missao/[id]', params: { id: item.id } })
-            }
-          />
-        ))
+        <View style={styles.list}>
+          {filtered.map((item) => (
+            <MissionCard
+              key={item.id}
+              item={item}
+              onPress={() =>
+                router.push({ pathname: '/missao/[id]', params: { id: item.id } })
+              }
+            />
+          ))}
+        </View>
       )}
-
-      {tab === 'active' && filtered[0] ? (
-        <Button
-          title="Marcar primeira missão como feita"
-          variant="outline"
-          onPress={async () => {
-            if (!profile) return;
-            const done = await api.completeMission(filtered[0].id, profile.id);
-            await qc.invalidateQueries({ queryKey: ['missions', profile.id] });
-            const refreshed = await api.getProfile(profile.id);
-            if (refreshed) useAuthStore.getState().setProfile(refreshed);
-            showCelebration('Missão concluída!', `+${done.mission?.xp_reward ?? 0} XP`);
-            refetch();
-          }}
-        />
-      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  tabs: { flexDirection: 'row', gap: 8 },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 4,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 18,
+    color: colors.text,
+    textAlign: 'center',
+    flex: 1,
+  },
+  list: {
+    gap: 12,
+  },
+  loading: {
+    paddingVertical: 40,
+    alignItems: 'center',
+  },
 });
