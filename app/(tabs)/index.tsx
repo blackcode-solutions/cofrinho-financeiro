@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { router } from 'expo-router';
-import { Bell, Eye, EyeOff, Flame, PiggyBank, Receipt, Package } from 'lucide-react-native';
-import { Screen, Card, ProgressRing, QuickAction } from '@/src/components/ui';
-import { useAuthStore } from '@/src/store';
+import { Card, ProgressRing, QuickAction, Screen } from '@/src/components/ui';
 import { useSavings } from '@/src/hooks/useFinanceData';
+import { useAuthStore } from '@/src/store';
 import { colors } from '@/src/theme/tokens';
 import { formatCurrency, suggestedSaveAmount } from '@/src/utils/finance';
+import { router } from 'expo-router';
+import { Bell, Eye, EyeOff, Flame, Package, PiggyBank, Receipt } from 'lucide-react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const profile = useAuthStore((s) => s.profile);
@@ -32,7 +32,7 @@ export default function HomeScreen() {
     <Screen>
       <View style={styles.top}>
         <View style={styles.topText}>
-          <Text style={styles.hello}>Olá, {firstName}! 👋</Text>
+          <Text style={styles.hello}>Olá, {firstName}!</Text>
           <Text style={styles.sub}>Foco hoje, liberdade sempre.</Text>
         </View>
         <Pressable hitSlop={12} accessibilityLabel="Notificações">
