@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { router } from 'expo-router';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
-import { Screen, Input, Button } from '@/src/components/ui';
+import { Screen, Input } from '@/src/components/ui';
 import { GoogleAuthButton, SocialDivider } from '@/src/components/auth';
 import { api } from '@/src/services/api';
 import { signInWithGoogle } from '@/src/services/googleAuth';
@@ -160,7 +168,20 @@ export default function SignUpScreen() {
         )}
       />
 
-      <Button title="Criar conta" loading={loading} onPress={handleSubmit(onSubmit)} />
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={handleSubmit(onSubmit)}
+        disabled={loading || googleLoading}
+        accessibilityRole="button"
+        accessibilityLabel="Criar conta"
+        style={[styles.submitButton, (loading || googleLoading) && styles.submitButtonDisabled]}
+      >
+        {loading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.submitButtonText}>Criar conta</Text>
+        )}
+      </TouchableOpacity>
 
       <SocialDivider />
       <GoogleAuthButton onPress={onGoogle} loading={googleLoading} disabled={loading} />
@@ -199,6 +220,24 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
     color: colors.muted,
+  },
+  submitButton: {
+    marginTop: 4,
+    alignSelf: 'stretch',
+    width: '100%',
+    backgroundColor: '#16A34A',
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitButtonDisabled: {
+    opacity: 0.5,
+  },
+  submitButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter_600SemiBold',
   },
   footer: {
     flexDirection: 'row',

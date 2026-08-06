@@ -70,12 +70,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scroll: {
+    flexGrow: 1,
     paddingBottom: 40,
   },
   inner: {
     paddingHorizontal: 20,
     paddingTop: 12,
     gap: 16,
+    width: '100%',
   },
   header: {
     flexDirection: 'row',

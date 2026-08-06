@@ -60,6 +60,8 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
+    alignSelf: 'stretch',
+    width: '100%',
     height: 56,
     borderRadius: radius.lg,
     alignItems: 'center',

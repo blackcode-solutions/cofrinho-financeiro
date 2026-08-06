@@ -1,5 +1,5 @@
 import { GoogleAuthButton, SocialDivider } from '@/src/components/auth';
-import { Button, Input, Screen } from '@/src/components/ui';
+import { Input, Screen } from '@/src/components/ui';
 import { api } from '@/src/services/api';
 import { signInWithGoogle } from '@/src/services/googleAuth';
 import { isSupabaseConfigured, supabase } from '@/src/services/supabase';
@@ -10,7 +10,15 @@ import { router } from 'expo-router';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -155,7 +163,20 @@ export default function SignInScreen() {
         <Text style={styles.forgot}>Esqueci minha senha</Text>
       </Pressable>
 
-      <Button title="Entrar" loading={loading} onPress={handleSubmit(onSubmit)} />
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={handleSubmit(onSubmit)}
+        disabled={loading || googleLoading}
+        accessibilityRole="button"
+        accessibilityLabel="Entrar"
+        style={[styles.enterButton, (loading || googleLoading) && styles.enterButtonDisabled]}
+      >
+        {loading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.enterButtonText}>Entrar</Text>
+        )}
+      </TouchableOpacity>
 
       <SocialDivider />
       <GoogleAuthButton onPress={onGoogle} loading={googleLoading} disabled={loading} />
@@ -204,6 +225,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.primary,
     textAlign: 'center',
+  },
+  enterButton: {
+    marginTop: 4,
+    alignSelf: 'stretch',
+    width: '100%',
+    backgroundColor: '#16A34A',
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  enterButtonDisabled: {
+    opacity: 0.5,
+  },
+  enterButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter_600SemiBold',
   },
   footer: {
     flexDirection: 'row',
