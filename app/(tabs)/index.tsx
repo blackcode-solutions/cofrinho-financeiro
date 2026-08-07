@@ -88,17 +88,17 @@ export default function HomeScreen() {
       <View style={styles.actions}>
         <QuickAction
           label="Guardar dinheiro"
-          icon={<PiggyBank color={colors.primary} size={24} />}
+          icon={<PiggyBank color={colors.primary} size={28} />}
           onPress={() => router.push('/guardar')}
         />
         <QuickAction
           label="Registrar gasto"
-          icon={<Receipt color={colors.error} size={24} />}
+          icon={<Receipt color={colors.error} size={28} />}
           onPress={() => router.push('/registrar-gasto')}
         />
         <QuickAction
           label="Ver desafios"
-          icon={<Package color={colors.primary} size={24} />}
+          icon={<Package color={colors.primary} size={28} />}
           onPress={() => router.push('/(tabs)/missoes')}
         />
       </View>

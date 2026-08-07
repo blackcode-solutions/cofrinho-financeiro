@@ -20,11 +20,11 @@ const styles = StyleSheet.create({
   wrap: {
     flex: 1,
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   icon: {
-    width: 56,
-    height: 56,
+    width: 64,
+    height: 64,
     borderRadius: radius.lg,
     backgroundColor: '#fff',
     alignItems: 'center',
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 12,
+    fontSize: 13,
     color: colors.text,
     textAlign: 'center',
   },
