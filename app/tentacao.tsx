@@ -218,8 +218,9 @@ export default function TentacaoScreen() {
         value={value}
         onChangeText={setValue}
       />
-      <Button
-        title="Calcular"
+      <TouchableOpacity
+        accessibilityRole="button"
+        activeOpacity={0.9}
         onPress={() => {
           if (parseCurrencyInput(value) <= 0) {
             Alert.alert('Informe um valor');
@@ -227,7 +228,10 @@ export default function TentacaoScreen() {
           }
           setShowResult(true);
         }}
-      />
+        style={styles.primaryButton}
+      >
+        <Text style={styles.primaryButtonText}>Calcular</Text>
+      </TouchableOpacity>
     </Screen>
   );
 }
@@ -417,6 +421,20 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textAlign: 'center',
     paddingVertical: spacing.sm,
+  },
+  primaryButton: {
+    alignSelf: 'stretch',
+    width: '100%',
+    height: 56,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryButtonText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    color: '#FFFFFF',
   },
   emptyTitle: {
     fontFamily: 'Inter_700Bold',
