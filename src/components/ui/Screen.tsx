@@ -2,7 +2,7 @@ import { ScrollView, View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { colors } from '@/src/theme/tokens';
 
-const DEFAULT_EDGES: Edge[] = ['top', 'left', 'right', 'bottom'];
+const DEFAULT_EDGES: Edge[] = ['top', 'left', 'right'];
 
 type Props = {
   children: React.ReactNode;
