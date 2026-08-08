@@ -4,7 +4,7 @@ import { useAuthStore } from '@/src/store';
 import { colors } from '@/src/theme/tokens';
 import { formatCurrency, suggestedSaveAmount } from '@/src/utils/finance';
 import { router } from 'expo-router';
-import { Bell, Eye, EyeOff, Flame, Package, PiggyBank, Receipt } from 'lucide-react-native';
+import { Bell, Eye, EyeOff, Flame, PiggyBank, Receipt } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -88,19 +88,19 @@ export default function HomeScreen() {
       <View style={styles.actions}>
         <QuickAction
           label="Guardar dinheiro"
-          icon={<PiggyBank color={colors.primary} size={28} />}
+          icon={<PiggyBank color={colors.primary} size={36} />}
           onPress={() => router.push('/guardar')}
         />
         <QuickAction
           label="Registrar gasto"
-          icon={<Receipt color={colors.error} size={28} />}
+          icon={<Receipt color={colors.error} size={36} />}
           onPress={() => router.push('/registrar-gasto')}
         />
-        <QuickAction
+        {/* <QuickAction
           label="Ver desafios"
           icon={<Package color={colors.primary} size={28} />}
           onPress={() => router.push('/(tabs)/missoes')}
-        />
+        /> */}
       </View>
     </Screen>
   );
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
     marginTop: 4,
   },
 });
