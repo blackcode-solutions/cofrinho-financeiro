@@ -1,29 +1,29 @@
-import { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Alert,
-  Image,
-  Pressable,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import { router } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft } from 'lucide-react-native';
-import { Screen, Card, Input } from '@/src/components/ui';
-import { useAuthStore, useUiStore } from '@/src/store';
+import { Card, Input, Screen } from '@/src/components/ui';
 import { api } from '@/src/services/api';
+import { useAuthStore, useUiStore } from '@/src/store';
 import { colors, radius } from '@/src/theme/tokens';
 import {
   formatCurrency,
   parseCurrencyInput,
   suggestedSaveAmount,
 } from '@/src/utils/finance';
+import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { ArrowLeft } from 'lucide-react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 export default function GuardarScreen() {
   const profile = useAuthStore((s) => s.profile);
@@ -139,7 +139,7 @@ export default function GuardarScreen() {
           accessibilityLabel="Guardar outro valor"
           style={styles.secondaryButton}
         >
-          <Text style={styles.secondaryButtonText}>Guardar outro valor</Text>
+          <Text style={styles.secondaryButtonText}></Text>
         </TouchableOpacity>
       </View>
 
@@ -155,7 +155,7 @@ export default function GuardarScreen() {
         >
           <Pressable style={styles.modalBackdrop} onPress={() => setCustomOpen(false)} />
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Guardar outro valor</Text>
+            <Text style={styles.modalTitle}></Text>
             <Input
               label="Valor"
               placeholder="0,00"

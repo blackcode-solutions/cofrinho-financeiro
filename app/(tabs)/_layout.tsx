@@ -1,7 +1,7 @@
-import { Tabs } from 'expo-router';
-import { Home, Wallet, Target, TrendingUp, User } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '@/src/theme/tokens';
+import { Tabs } from 'expo-router';
+import { Home, TrendingUp, User } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
@@ -32,6 +32,10 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
+      {/* Futuro: reativar Carteira/Missões na tab bar (trocar href: null pela config abaixo) */}
+      <Tabs.Screen name="carteira" options={{ href: null }} />
+      <Tabs.Screen name="missoes" options={{ href: null }} />
+      {/*
       <Tabs.Screen
         name="carteira"
         options={{
@@ -46,6 +50,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Target color={color} size={size} />,
         }}
       />
+      */}
       <Tabs.Screen
         name="evolucao"
         options={{

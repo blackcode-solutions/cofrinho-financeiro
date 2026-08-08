@@ -7,11 +7,14 @@ import {
   Pressable,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Clock, Timer, PieChart } from 'lucide-react-native';
 import { Screen, Input, Button, Card } from '@/src/components/ui';
-import { useAuthStore, useUiStore } from '@/src/store';
+import { useAuthStore } from '@/src/store';
+import { api } from '@/src/services/api';
 import { colors, spacing, radius, shadow } from '@/src/theme/tokens';
 import {
   calculateTemptation,
@@ -21,6 +24,18 @@ import {
 } from '@/src/utils/finance';
 
 const PRODUCT_IMAGE = require('../assets/images/product-ps5.png');
+
+function formatCurrencyMask(text: string): string {
+  const digits = text.replace(/\D/g, '');
+  if (!digits) return '';
+  const cents = Number(digits);
+  const value = cents / 100;
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  });
+}
 
 const CTA_WAIT_STYLE = {
   flex: 1,
@@ -62,10 +77,11 @@ const CTA_BUY_TEXT = {
 
 export default function TentacaoScreen() {
   const profile = useAuthStore((s) => s.profile);
-  const showCelebration = useUiStore((s) => s.showCelebration);
+  const qc = useQueryClient();
   const [product, setProduct] = useState('');
   const [value, setValue] = useState('');
   const [showResult, setShowResult] = useState(false);
+  const [waiting, setWaiting] = useState(false);
 
   const result = useMemo(() => {
     if (!profile) return null;
@@ -81,6 +97,34 @@ export default function TentacaoScreen() {
       return;
     }
     router.back();
+  };
+
+  const onValueChange = (text: string) => {
+    setValue(formatCurrencyMask(text));
+  };
+
+  const handleWait24h = async () => {
+    if (!profile || waiting) return;
+    const amount = parseCurrencyInput(value);
+    if (amount <= 0) {
+      Alert.alert('Informe um valor');
+      return;
+    }
+    try {
+      setWaiting(true);
+      const purchase = await api.createPurchase(profile.id, {
+        amount,
+        description: product.trim() || 'Produto',
+        category: 'Outros',
+        decision: 'wait',
+      });
+      await qc.invalidateQueries({ queryKey: ['purchases', profile.id] });
+      router.replace({ pathname: '/esperar-24h', params: { id: purchase.id } });
+    } catch (e) {
+      Alert.alert('Erro', e instanceof Error ? e.message : 'Falha ao salvar');
+    } finally {
+      setWaiting(false);
+    }
   };
 
   if (!profile) {
@@ -161,18 +205,23 @@ export default function TentacaoScreen() {
         <View style={styles.footer}>
           <Text style={styles.footerQuestion}>Ainda assim, deseja comprar?</Text>
 
-          <View style={styles.ctaRow}>
+          <View style={[styles.ctaRow, waiting && styles.ctaRowDisabled]}>
             <View style={CTA_WAIT_STYLE}>
               <TouchableOpacity
                 accessibilityRole="button"
+                accessibilityLabel="Esperar 24h"
                 activeOpacity={0.85}
+                disabled={waiting}
                 style={styles.ctaHit}
                 onPress={() => {
-                  showCelebration('Boa pausa', 'Volte amanhã com a cabeça mais fria.');
-                  router.replace('/esperar-24h');
+                  void handleWait24h();
                 }}
               >
-                <Text style={CTA_WAIT_TEXT}>Esperar 24h</Text>
+                {waiting ? (
+                  <ActivityIndicator color="#16A34A" />
+                ) : (
+                  <Text style={CTA_WAIT_TEXT}>Esperar 24h</Text>
+                )}
               </TouchableOpacity>
             </View>
 
@@ -180,6 +229,7 @@ export default function TentacaoScreen() {
               <TouchableOpacity
                 accessibilityRole="button"
                 activeOpacity={0.85}
+                disabled={waiting}
                 style={styles.ctaHit}
                 onPress={() => {
                   Alert.alert('Registrado', 'Tudo bem — o importante é ter pensado antes.');
@@ -214,9 +264,9 @@ export default function TentacaoScreen() {
       <Input
         label="Valor"
         keyboardType="decimal-pad"
-        placeholder="4500"
+        placeholder="R$ 0,00"
         value={value}
-        onChangeText={setValue}
+        onChangeText={onValueChange}
       />
       <TouchableOpacity
         accessibilityRole="button"
@@ -408,6 +458,9 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     gap: 12,
     width: '100%',
+  },
+  ctaRowDisabled: {
+    opacity: 0.55,
   },
   ctaHit: {
     flex: 1,

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
-import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Screen, Card, Input, Button, ProgressBar, AlertBanner, EmptyState } from '@/src/components/ui';
 import { useAuthStore, useUiStore } from '@/src/store';
@@ -112,19 +111,6 @@ export default function CarteiraScreen() {
           <Button title="Salvar" loading={saving} onPress={save} />
         </View>
       </Card>
-
-      <Card>
-        <Text style={styles.formTitle}>Atalhos comportamentais</Text>
-        <Text style={styles.hint}>
-          Use o Modo Tentação antes de qualquer compra no cartão acima de R$ 200.
-        </Text>
-        <Button
-          title="Abrir Modo Tentação"
-          variant="outline"
-          onPress={() => router.push('/tentacao')}
-          style={{ marginTop: 12 }}
-        />
-      </Card>
     </Screen>
   );
 }
@@ -136,5 +122,4 @@ const styles = StyleSheet.create({
   bill: { fontFamily: 'Inter_700Bold', fontSize: 32, color: colors.text, marginTop: 8 },
   limit: { fontFamily: 'Inter_400Regular', fontSize: 13, color: colors.muted, marginTop: 4 },
   formTitle: { fontFamily: 'Inter_600SemiBold', fontSize: 16, color: colors.text },
-  hint: { fontFamily: 'Inter_400Regular', fontSize: 13, color: colors.muted, marginTop: 8, lineHeight: 20 },
 });

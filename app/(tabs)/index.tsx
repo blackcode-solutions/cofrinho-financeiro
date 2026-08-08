@@ -4,7 +4,7 @@ import { useAuthStore } from '@/src/store';
 import { colors } from '@/src/theme/tokens';
 import { formatCurrency, suggestedSaveAmount } from '@/src/utils/finance';
 import { router } from 'expo-router';
-import { Bell, Eye, EyeOff, Flame, PiggyBank, Receipt } from 'lucide-react-native';
+import { Bell, Eye, EyeOff, Flame, PiggyBank, Receipt, ShoppingBag } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -96,11 +96,11 @@ export default function HomeScreen() {
           icon={<Receipt color={colors.error} size={36} />}
           onPress={() => router.push('/registrar-gasto')}
         />
-        {/* <QuickAction
-          label="Ver desafios"
-          icon={<Package color={colors.primary} size={28} />}
-          onPress={() => router.push('/(tabs)/missoes')}
-        /> */}
+        <QuickAction
+          label="Quero comprar"
+          icon={<ShoppingBag color={colors.warning} size={36} />}
+          onPress={() => router.push('/tentacao')}
+        />
       </View>
     </Screen>
   );
