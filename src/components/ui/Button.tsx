@@ -1,8 +1,22 @@
-import { Pressable, Text, ActivityIndicator, ViewStyle, StyleSheet } from 'react-native';
+import {
+  Pressable,
+  Text,
+  ActivityIndicator,
+  ViewStyle,
+  TextStyle,
+  StyleSheet,
+} from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { colors, radius } from '@/src/theme/tokens';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline' | 'outlineLight';
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'outline'
+  | 'outlinePrimary'
+  | 'outlineLight';
 
 type Props = {
   title: string;
@@ -11,6 +25,7 @@ type Props = {
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
+  textStyle?: TextStyle;
 };
 
 const stylesFor: Record<Variant, { bg: string; text: string; border?: string }> = {
@@ -19,6 +34,7 @@ const stylesFor: Record<Variant, { bg: string; text: string; border?: string }> 
   ghost: { bg: 'transparent', text: colors.primary },
   danger: { bg: colors.error, text: '#fff' },
   outline: { bg: 'transparent', text: colors.text, border: colors.border },
+  outlinePrimary: { bg: colors.card, text: colors.primary, border: colors.primary },
   outlineLight: { bg: 'transparent', text: '#fff', border: '#FFFFFF' },
 };
 
@@ -29,9 +45,11 @@ export function Button({
   loading,
   disabled,
   style,
+  textStyle,
 }: Props) {
   const v = stylesFor[variant];
-  const isPill = variant === 'outlineLight';
+  const isCapsule = variant === 'outlinePrimary';
+  const isSoftPill = variant === 'outlineLight';
   return (
     <Pressable
       accessibilityRole="button"
@@ -42,7 +60,8 @@ export function Button({
       }}
       style={({ pressed }) => [
         styles.base,
-        isPill && styles.pill,
+        isCapsule && styles.capsule,
+        isSoftPill && styles.pillSoft,
         {
           backgroundColor: v.bg,
           borderColor: v.border ?? 'transparent',
@@ -55,7 +74,14 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={v.text} />
       ) : (
-        <Text style={[styles.text, { color: v.text }]}>{title}</Text>
+        <Text
+          style={[styles.text, { color: v.text }, textStyle]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.85}
+        >
+          {title}
+        </Text>
       )}
     </Pressable>
   );
@@ -71,7 +97,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  pill: {
+  capsule: {
+    borderRadius: radius.full,
+    height: 48,
+  },
+  pillSoft: {
     borderRadius: 16,
     height: 56,
   },
