@@ -1,5 +1,8 @@
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { colors } from '@/src/theme/tokens';
+
+const DEFAULT_EDGES: Edge[] = ['top', 'left', 'right', 'bottom'];
 
 type Props = {
   children: React.ReactNode;
@@ -10,6 +13,7 @@ type Props = {
   right?: React.ReactNode;
   dark?: boolean;
   backgroundColor?: string;
+  edges?: Edge[];
 };
 
 export function Screen({
@@ -21,6 +25,7 @@ export function Screen({
   right,
   dark,
   backgroundColor,
+  edges = DEFAULT_EDGES,
 }: Props) {
   const content = (
     <View style={[styles.inner, style]}>
@@ -43,6 +48,7 @@ export function Screen({
 
   return (
     <SafeAreaView
+      edges={edges}
       style={[
         styles.safe,
         dark && { backgroundColor: '#14532D' },
